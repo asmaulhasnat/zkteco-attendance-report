@@ -21,8 +21,8 @@
     @for($d=1;$d<=$totalDays;$d++)
         @php
             $day = \Carbon\Carbon::create($year,$monthNumber,$d)->format('D');
-            $short = strtoupper(substr($day,0,2));
-            $class = in_array($short,['SU','SA']) ? 'weekend' : '';
+            $short = strtolower($day);
+            $class = in_array($short,$weekend) ? 'weekend' : '';
         @endphp
 
         <th class="{{ $class }}">{{ $short }}</th>
@@ -38,6 +38,8 @@
 <tbody>
 
 @foreach($departments as $dept)
+
+@if(count($depertment_wise_employee[$dept->id]?? [])>0 )
 
 <tr>
     <td colspan="{{$total_colspan}}" align="left">
@@ -62,14 +64,14 @@
         @php
             $date = \Carbon\Carbon::create($year,$monthNumber,$d)->format('Y-m-d');
             $day = \Carbon\Carbon::create($year,$monthNumber,$d)->format('D');
-            $short = strtoupper(substr($day,0,2));
-            $class = in_array($short,['SU','SA']) ? 'weekend' : '';
-            $weekend_value=in_array($short,['SU','SA']) ? 'WE' : '';
+            $short = strtolower($day);
+            $class = in_array($short,$weekend) ? 'weekend' : '';
+            $weekend_value=in_array($short,$weekend) ? 'WE' : '';
         @endphp
 
         <td class="{{ $class }}">
             {{ 
-                $attendances_by_employee[$employee->id.'___'.$date]
+                $attendances_by_employee[$employee->id.'__'.$date]
                 ?? ($holy_days[$date]['alias'] ?? $weekend_value  ?? '')
             }}
         </td>
@@ -93,6 +95,7 @@
 </tr>
 
 @endforeach
+@endif
 @endforeach
 
 </tbody>

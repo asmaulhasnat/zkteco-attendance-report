@@ -1,60 +1,288 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
-    </head>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
 
-<body class="bg-gray-900 text-white">
+<body class="bg-light">
 
-<div class="container mx-auto p-6">
+<div class="container py-5">
 
-    <h1 class="text-2xl mb-4">Attendance Report</h1>
+    {{-- Global Validation Errors --}}
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <h6 class="mb-2">Please fix the following errors:</h6>
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-    <form id="reportForm" action="" method="POST" target="_blank">
+    <!-- Attendance Report -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Attendance Report</h4>
+        </div>
 
-        @csrf
+        <div class="card-body">
 
-        <input type="month" name="month" class="text-black p-2" value="{{date('Y-m')}}">
+            <form action="" method="POST" target="_blank">
+                @csrf
 
-        <select name="department" class="text-black p-2">
-            <option value="">Department</option>
-            @foreach($departments as $d)
-                <option value="{{ $d->id }}">{{ $d->dept_name }}</option>
-            @endforeach
-        </select>
+                <input type="hidden" name="report_type" value="attendance">
 
-        <select name="employee" class="text-black p-2">
-            <option value="">Employee</option>
-            @foreach($employees as $e)
-                <option value="{{ $e->id }}">
-                    {{ $e->first_name }} {{ $e->last_name }}
-                </option>
-            @endforeach
-        </select>
+                <div class="row g-3">
 
-        <select name="format" class="text-black p-2">
-            <option value="pdf">PDF</option>
-            <option value="csv">CSV</option>
-           
-        </select>
+                    <!-- Month -->
+                    <div class="col-md-3">
+                        <label class="form-label">Month</label>
+                        <input
+                            type="month"
+                            name="month"
+                            class="form-control @error('month') is-invalid @enderror"
+                            value="{{ old('month', date('Y-m')) }}"
+                        >
 
-        <button class="bg-blue-600 px-4 py-2">Generate</button>
+                        @error('month')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
 
-    </form>
-    <hr>
+                    <!-- Department -->
+                    <div class="col-md-3">
+                        <label class="form-label">Department</label>
 
-    <div id="result"></div>
+                        <select
+                            name="department"
+                            class="form-select @error('department') is-invalid @enderror"
+                        >
+                            <option value="">Select Department</option>
+
+                            @foreach($departments as $d)
+                                <option
+                                    value="{{ $d->id }}"
+                                    {{ old('department') == $d->id ? 'selected' : '' }}
+                                >
+                                    {{ $d->dept_name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('department')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- Employee -->
+                    <div class="col-md-3">
+                        <label class="form-label">Employee</label>
+
+                        <select
+                            name="employee"
+                            class="form-select @error('employee') is-invalid @enderror"
+                        >
+                            <option value="">Select Employee</option>
+
+                            @foreach($employees as $e)
+                                <option
+                                    value="{{ $e->id }}"
+                                    {{ old('employee') == $e->id ? 'selected' : '' }}
+                                >
+                                    {{ $e->first_name }} {{ $e->last_name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('employee')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- Format -->
+                    <div class="col-md-3">
+                        <label class="form-label">Format</label>
+
+                        <select
+                            name="format"
+                            class="form-select @error('format') is-invalid @enderror"
+                        >
+                            <option value="pdf">PDF</option>
+                            <option value="csv">CSV</option>
+                        </select>
+
+                        @error('format')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- Button -->
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            Generate Attendance Report
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leave Report -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Leave Report</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form action="" method="POST" target="_blank">
+                @csrf
+
+                <input type="hidden" name="report_type" value="leave">
+
+                <div class="row g-3">
+
+                    <!-- Start Date -->
+                    <div class="col-md-3">
+                        <label class="form-label">Start Date</label>
+
+                        <input
+                            type="date"
+                            name="start_date"
+                            class="form-control @error('start_date') is-invalid @enderror"
+                            value="{{ old('start_date', date('Y-01-01')) }}"
+                        >
+
+                        @error('start_date')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- End Date -->
+                    <div class="col-md-3">
+                        <label class="form-label">End Date</label>
+
+                        <input
+                            type="date"
+                            name="end_date"
+                            class="form-control @error('end_date') is-invalid @enderror"
+                            value="{{ old('end_date', date('Y-12-31')) }}"
+                        >
+
+                        @error('end_date')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- Department -->
+                    <div class="col-md-3">
+                        <label class="form-label">Department</label>
+
+                        <select
+                            name="department"
+                            class="form-select @error('department') is-invalid @enderror"
+                        >
+                            <option value="">Select Department</option>
+
+                            @foreach($departments as $d)
+                                <option
+                                    value="{{ $d->id }}"
+                                    {{ old('department') == $d->id ? 'selected' : '' }}
+                                >
+                                    {{ $d->dept_name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('department')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- Employee -->
+                    <div class="col-md-3">
+                        <label class="form-label">Employee</label>
+
+                        <select
+                            name="employee"
+                            class="form-select @error('employee') is-invalid @enderror"
+                        >
+                            <option value="">Select Employee</option>
+
+                            @foreach($employees as $e)
+                                <option
+                                    value="{{ $e->id }}"
+                                    {{ old('employee') == $e->id ? 'selected' : '' }}
+                                >
+                                    {{ $e->first_name }} {{ $e->last_name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('employee')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- Format -->
+                    <div class="col-md-3">
+                        <label class="form-label">Format</label>
+
+                        <select
+                            name="format"
+                            class="form-select @error('format') is-invalid @enderror"
+                        >
+                            <option value="pdf">PDF</option>
+                            <option value="csv">CSV</option>
+                        </select>
+
+                        @error('format')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+
+                    <!-- Button -->
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">
+                            Generate Leave Report
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
 
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
-<script>
-
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

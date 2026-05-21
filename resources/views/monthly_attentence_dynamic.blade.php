@@ -3,7 +3,7 @@
 <thead>
 
 <tr>
-    <th rowspan="2">ID</th>
+    <th rowspan="2">EMP ID</th>
     <th rowspan="2" class="name-col">Name</th>
     <th rowspan="2" class="pos-col">Position</th>
 
@@ -72,7 +72,7 @@
         <td class="{{ $class }}">
             {{ 
                 $attendances_by_employee[$employee->id.'__'.$date]
-                ?? ($holy_days[$date]['alias'] ?? $weekend_value  ?? '')
+                ?? ($holy_days[$date] ?? $weekend_value  ?? '')
             }}
         </td>
     @endfor

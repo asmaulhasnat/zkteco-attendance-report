@@ -100,7 +100,7 @@
                                     value="{{ $e->id }}"
                                     {{ old('employee') == $e->id ? 'selected' : '' }}
                                 >
-                                    {{ $e->first_name }} {{ $e->last_name }}
+                                    {{$e->emp_code}} : {{ $e->first_name }} {{ $e->last_name }}
                                 </option>
                             @endforeach
                         </select>
@@ -236,7 +236,7 @@
                                     value="{{ $e->id }}"
                                     {{ old('employee') == $e->id ? 'selected' : '' }}
                                 >
-                                    {{ $e->first_name }} {{ $e->last_name }}
+                                {{$e->emp_code}} : {{ $e->first_name }} {{ $e->last_name }}
                                 </option>
                             @endforeach
                         </select>

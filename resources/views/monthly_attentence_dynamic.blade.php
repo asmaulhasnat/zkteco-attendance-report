@@ -50,7 +50,7 @@
 @foreach($depertment_wise_employee[$dept->id] ?? [] as $employee)
 
 <tr>
-    <td>{{ $employee->id }}</td>
+    <td>{{ $employee->emp_code ?? '' }}</td>
 
     <td align="left">
         {{ $employee->first_name }} {{ $employee->last_name }}

@@ -23,8 +23,8 @@
     <th >From</th>
     <th>To</th>
     @foreach($leave_codes ?? [] as $leave)
-        <th>{{ $leave }} </th>
-        <th>BL({{$config_leave[$leave] ?? ''}})</th>
+        <th>{{ $leave }} ({{$config_leave[$leave] ?? ''}})</th>
+        <th>BL</th>
     @endforeach
 </tr>
 

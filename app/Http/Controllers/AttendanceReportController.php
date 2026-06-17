@@ -211,7 +211,8 @@ class AttendanceReportController extends Controller
             ->join('att_paycode as pc', 'pc.id', '=', 'al.pay_code_id')
             ->where('al.start_time', '>=', $yearStart)
             ->where('al.end_time', '<', $startDate)
-            ->where('wwi.approval_status', 'approved');
+            // ->where('wwi.approval_status', 'approved')
+            ;
             
 
             if ($request->employee) {

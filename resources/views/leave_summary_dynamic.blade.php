@@ -42,12 +42,22 @@
     <td align="left">{{$start_time}}</td>
     <td align="left">{{$end_time }}</td>
     <td align="center">{{$lrecord['leave_info']->leave_day ?? ''}} ({{$lrecord['leave_code'] ?? ''}})</td>
-    @foreach($leave_codes ?? [] as $leave)
-        <td align="center">{{ $lrecord['leave_code']== $leave ?($lrecord['leave_info']->leave_day ?? ''):'' }}</td>
-        <td align="center">{{ $lrecord['leave_code']== $leave ?($lrecord['leave_balance'] ?? ''):$employees_leave_balance[$employee->id.'___'.$leave]  }}</td>
-    @endforeach
-</tr>
+        @foreach($leave_codes ?? [] as $leave)
+            <td align="center">{{ $lrecord['leave_code']== $leave ?($lrecord['leave_info']->leave_day ?? ''):'' }}</td>
+            <td align="center">{{ $lrecord['leave_code']== $leave ?($lrecord['leave_balance'] ?? ''):$employees_leave_balance[$employee->id.'___'.$leave]  }}</td>
+        @endforeach
+    </tr>
 @empty
+<tr>
+    <td align="left"></td>
+    <td align="left"></td>
+    <td align="center"></td>
+        @foreach($leave_codes ?? [] as $leave)
+            <td align="center"></td>
+            <td align="center">{{ $employees_leave_balance[$employee->id.'___'.$leave] ?? 0  }}</td>
+        @endforeach
+    </tr>
+
 @endforelse
 </tbody>
 </table>

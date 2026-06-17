@@ -7,4 +7,4 @@ use App\Http\Controllers\AttendanceReportController;
 
 Route::get('/',[AttendanceReportController::class,'index']);
 Route::post('/',[AttendanceReportController::class,'monthlyAttendanceReport']);
-Route::get('employees-by-department/{department}',[AttendanceReportController::class,'fetcheEmployee']);
+Route::get('employees-by-department/{department?}',[AttendanceReportController::class,'fetcheEmployee']);

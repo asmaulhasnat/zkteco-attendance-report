@@ -281,11 +281,7 @@ function bindDepartmentEmployee(deptId, empId) {
         employeeSelect.innerHTML =
             '<option value="">Loading...</option>';
 
-        if (!departmentId) {
-            employeeSelect.innerHTML =
-                '<option value="">Select Employee</option>';
-            return;
-        }
+        
 
         fetch(`/employees-by-department/${departmentId}`)
             .then(response => response.json())

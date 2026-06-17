@@ -281,7 +281,7 @@ class AttendanceReportController extends Controller
                             : ''
                     );
 
-                $employees_leave_balance[$value->employee_id.'___'.$leave_code]=$employees_leave_balance[$value->employee_id.'___'.$leave_code]-$value->total_leave_day;
+                $employees_leave_balance[$value->employee_id.'___'.$leave_code]=$employees_leave_balance[$value->employee_id.'___'.$leave_code]-$value->leave_day;
                 $leaves_record_by_employee[$value->employee_id][] = [
                     'leave_info' => $value,
                     'leave_code' => $leave_code,

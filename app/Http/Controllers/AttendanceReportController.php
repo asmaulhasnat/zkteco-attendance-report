@@ -18,7 +18,7 @@ class AttendanceReportController extends Controller
     {
         $data = [];
         $data['departments'] = $this->getDepartmentList($request);
-        $data['employees'] = $this->getEmployeeList($request);;
+        $data['employees'] = $this->getEmployeeList($request,null,true);
         return view('welcome', $data);
     }
     
@@ -174,7 +174,9 @@ class AttendanceReportController extends Controller
             $data['depertment_wise_employee'] =$depertment_wise_employee;
             $data['summary_total'] = $summary_total;
             $data['working_days'] = $working_days;
-            $data['total_colspan'] =$data['totalDays']+7+count($leave_codes);
+            $data['leave_codes'] = array_keys($request->config ?? config('leave'));
+            $data['total_colspan'] =$data['totalDays']+7+count( $data['leave_codes'] );
+
 
             $config = ['format'=>'A3','orientation'=>'L','show_watermark'=>false];
             if($request->format == 'pdf'){
@@ -329,8 +331,8 @@ class AttendanceReportController extends Controller
     }
 
 
-    public function getEmployeeList($request,$department=null){
-        return DB::table('personnel_employee as pe')
+    public function getEmployeeList($request,$department=null,$report_view=false){
+        $employee = DB::table('personnel_employee as pe')
             ->join('personnel_position as pp', 'pp.id', '=', 'pe.position_id')
             ->join('personnel_department as d', 'd.id', '=', 'pe.department_id')
             ->select(
@@ -352,8 +354,15 @@ class AttendanceReportController extends Controller
                 $query->where('pe.department_id', $request->department);
             })->when($department, function ($query) use ($department) {
                 $query->where('pe.department_id', $department);
-            })
-            ->orderBy('pe.first_name','asc')->get();
+            });
+            
+            if($report_view){
+                $employee = $employee->orderBy('d.dept_name','asc')->orderBy('pe.id','asc')->get();
+            }else{
+                $employee = $employee->orderBy('pe.first_name','asc')->get();
+            }
+        return $employee;
+            
     }
 
     public function getDepartmentList($request){

@@ -179,7 +179,8 @@ class AttendanceReportController extends Controller
             }
         }else{
 
-
+            $yearStart = $data['year'] . '-01-01';
+            $rangeEnd  = $startDate;
             $employees_leave_balance = [];
 
             foreach($data['employees'] as $key=>$value){
@@ -197,17 +198,20 @@ class AttendanceReportController extends Controller
                 'al.pay_code_id',
                 'pc.code',
                 'pc.symbol',
-                DB::raw('SUM(al.leave_day) as total_leave_day')
+                DB::raw("
+                    SUM(
+                        DATEDIFF(
+                            LEAST(al.end_time, '{$rangeEnd}'),
+                            GREATEST(al.start_time, '{$yearStart}')
+                        ) + 1
+                    ) as total_leave_day
+                ")
             )
-            ->join(
-                'workflow_workflowinstance as wwi',
-                'al.workflowinstance_ptr_id',
-                '=',
-                'wwi.id'
-            )
+            ->join('workflow_workflowinstance as wwi', 'al.workflowinstance_ptr_id', '=', 'wwi.id')
             ->join('att_paycode as pc', 'pc.id', '=', 'al.pay_code_id')
-            ->where('al.end_time', '<', $startDate)          // before 2026-06-01
-            ->where('al.end_time', '>=', $data['year'].'-01-01'); // after 2026-01-01
+            ->where('al.start_time', '>=', $yearStart)
+            ->where('al.end_time', '<', $startDate)
+            ->where('wwi.approval_status', 'approved');
             
 
             if ($request->employee) {
@@ -244,7 +248,12 @@ class AttendanceReportController extends Controller
                 'al.start_time',
                 'al.end_time',
                 'al.apply_time',
-                'al.leave_day',
+                DB::raw("
+            DATEDIFF(
+                LEAST(DATE(al.end_time), '{$endDate}'),
+                GREATEST(DATE(al.start_time), '{$startDate}')
+            ) + 1 as leave_day
+        "),
                 'al.pay_code_id',
                 'wwi.approval_time',
                 'wwi.approval_remark',

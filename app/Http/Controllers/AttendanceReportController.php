@@ -60,7 +60,7 @@ class AttendanceReportController extends Controller
         $data = [];
         $data['departments'] = $this->getDepartmentList($request);
         $data['weekend'] =$this->weekendDayList();
-        $data['employees'] =$employees = $this->getEmployeeList($request);
+        $data['employees'] =$employees = $this->getEmployeeList($request,null,true);
         $data['leave_codes']=$leave_codes  =$this->getLeaveCodes();
         $monthName ='';
 
@@ -174,7 +174,7 @@ class AttendanceReportController extends Controller
             $data['depertment_wise_employee'] =$depertment_wise_employee;
             $data['summary_total'] = $summary_total;
             $data['working_days'] = $working_days;
-            $data['leave_codes'] = array_keys(config('leave'));
+            $data['leave_codes'] = [];
             $data['total_colspan'] =$data['totalDays']+7+count( $data['leave_codes'] );
 
 

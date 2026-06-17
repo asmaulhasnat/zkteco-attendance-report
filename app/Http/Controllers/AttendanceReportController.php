@@ -302,6 +302,8 @@ class AttendanceReportController extends Controller
 
             $data['leaves_record_by_employee'] = $leaves_record_by_employee;
             $data['employees_leave_balance'] = $employees_leave_balance;
+            $data['config_leave'] = config('leave');
+            
 
             $config = ['format'=>'A4','orientation'=>'P','show_watermark'=>false];
             if($request->format == 'pdf'){

@@ -192,22 +192,23 @@ class AttendanceReportController extends Controller
 
 
             $leaves_previous_records = DB::table('att_leave as al')
-                ->select(
-                    'wwi.employee_id',
-                    'al.pay_code_id',
-                    'pc.code',
-                    'pc.symbol',
-                    DB::raw('SUM(al.leave_day) as total_leave_day')
-                )
-                ->join(
-                    'workflow_workflowinstance as wwi',
-                    'al.workflowinstance_ptr_id',
-                    '=',
-                    'wwi.id'
-                )
-                ->join('att_paycode as pc', 'pc.id', '=', 'al.pay_code_id')
-                ->where('al.start_time', '<', $endDate)
-                ->where('al.end_time', '>=', $data['year'].'-01-01');
+            ->select(
+                'wwi.employee_id',
+                'al.pay_code_id',
+                'pc.code',
+                'pc.symbol',
+                DB::raw('SUM(al.leave_day) as total_leave_day')
+            )
+            ->join(
+                'workflow_workflowinstance as wwi',
+                'al.workflowinstance_ptr_id',
+                '=',
+                'wwi.id'
+            )
+            ->join('att_paycode as pc', 'pc.id', '=', 'al.pay_code_id')
+            ->where('al.end_time', '<', $startDate)          // before 2026-06-01
+            ->where('al.end_time', '>=', $data['year'].'-01-01'); // after 2026-01-01
+            
 
             if ($request->employee) {
                 $leaves_previous_records->where('wwi.employee_id', $request->employee);

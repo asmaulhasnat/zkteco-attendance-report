@@ -331,7 +331,6 @@ class AttendanceReportController extends Controller
 
     public function getEmployeeList($request,$department=null){
         return DB::table('personnel_employee as pe')
-            ->selectRaw('pe.*,d.dept_name')
             ->join('personnel_position as pp', 'pp.id', '=', 'pe.position_id')
             ->join('personnel_department as d', 'd.id', '=', 'pe.department_id')
             ->select(
@@ -343,7 +342,8 @@ class AttendanceReportController extends Controller
                 'pe.nickname',
                 'pe.email',
                 'pe.hire_date',
-                'pp.position_name'
+                'pp.position_name',
+                "d.dept_name"
             )
             ->when($request->employee, function ($query) use ($request) {
                 $query->where('pe.id', $request->employee);

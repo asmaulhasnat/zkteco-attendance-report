@@ -2,7 +2,9 @@
 <table class="table @if($loop->iteration!=$loop->last) page-break @endif">
 
 <thead>
-
+<tr>
+    <th colspan="{{(count($leave_codes)*2)+3}}" align="left">Date Range : From  {{$startDate ?? ''}} {{$endDate ?? ''}}</th>
+</tr>
 <tr>
     <th colspan="3" align="left">Name: {{$employee->first_name ?? ''}} {{$employee->last_name ?? ''}}</th>
     <th colspan="{{count($leave_codes)*2}}" align="left">Id No: {{$employee->emp_code ?? ''}}</th>

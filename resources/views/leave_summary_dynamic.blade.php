@@ -40,7 +40,6 @@
 
         $end_time = \Carbon\Carbon::parse($lrecord['leave_info']->end_time)->format('Y-m-d');
     @endphp
-
     <tr>
     <td align="left">{{$start_time}}</td>
     <td align="left">{{$end_time }}</td>

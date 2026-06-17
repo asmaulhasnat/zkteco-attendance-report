@@ -180,7 +180,6 @@ class AttendanceReportController extends Controller
         }else{
 
 
-            $previous_leave_by_employee = [];
             $employees_leave_balance = [];
 
             foreach($data['employees'] as $key=>$value){
@@ -231,7 +230,7 @@ class AttendanceReportController extends Controller
                             ? $this->generateAbb($value->code)
                             : ''
                     );
-                    $employees_leave_balance[$value->employee_id.'___'.$leave_code]=$employees_leave_balance[$value->employee_id.'___'.$leave_code]-$value->total_leave_day;
+                    $employees_leave_balance[$value->employee_id.'___'.$leave_code]=($employees_leave_balance[$value->employee_id.'___'.$leave_code] ?? 0)-($value->total_leave_day ?? 0);
 
             }
 
@@ -281,7 +280,7 @@ class AttendanceReportController extends Controller
                             : ''
                     );
 
-                $employees_leave_balance[$value->employee_id.'___'.$leave_code]=$employees_leave_balance[$value->employee_id.'___'.$leave_code]-$value->leave_day;
+                $employees_leave_balance[$value->employee_id.'___'.$leave_code]=($employees_leave_balance[$value->employee_id.'___'.$leave_code] ?? 0)-($value->leave_day ?? 0);
                 $leaves_record_by_employee[$value->employee_id][] = [
                     'leave_info' => $value,
                     'leave_code' => $leave_code,

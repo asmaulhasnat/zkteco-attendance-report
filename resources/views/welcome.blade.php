@@ -62,7 +62,7 @@
                     <div class="col-md-3">
                         <label class="form-label">Department</label>
 
-                        <select
+                        <select id="attendance_department"
                             name="department"
                             class="form-select @error('department') is-invalid @enderror"
                         >
@@ -90,19 +90,12 @@
                         <label class="form-label">Employee</label>
 
                         <select
+                            id="attendance_employee"
                             name="employee"
                             class="form-select @error('employee') is-invalid @enderror"
                         >
                             <option value="">Select Employee</option>
-
-                            @foreach($employees as $e)
-                                <option
-                                    value="{{ $e->id }}"
-                                    {{ old('employee') == $e->id ? 'selected' : '' }}
-                                >
-                                    {{$e->emp_code}} : {{ $e->first_name }} {{ $e->last_name }}
-                                </option>
-                            @endforeach
+                            @include('employee_option')
                         </select>
 
                         @error('employee')
@@ -198,7 +191,7 @@
                     <div class="col-md-3">
                         <label class="form-label">Department</label>
 
-                        <select
+                        <select id="leave_department"
                             name="department"
                             class="form-select @error('department') is-invalid @enderror"
                         >
@@ -225,20 +218,13 @@
                     <div class="col-md-3">
                         <label class="form-label">Employee</label>
 
-                        <select
+                        <select id="leave_employee"
                             name="employee"
                             class="form-select @error('employee') is-invalid @enderror"
                         >
                             <option value="">Select Employee</option>
 
-                            @foreach($employees as $e)
-                                <option
-                                    value="{{ $e->id }}"
-                                    {{ old('employee') == $e->id ? 'selected' : '' }}
-                                >
-                                {{$e->emp_code}} : {{ $e->first_name }} {{ $e->last_name }}
-                                </option>
-                            @endforeach
+                            @include('employee_option')
                         </select>
 
                         @error('employee')
@@ -283,6 +269,51 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function bindDepartmentEmployee(deptId, empId) {
+
+    document.getElementById(deptId).addEventListener('change', function() {
+
+        let departmentId = this.value;
+        let employeeSelect = document.getElementById(empId);
+
+        employeeSelect.innerHTML =
+            '<option value="">Loading...</option>';
+
+        if (!departmentId) {
+            employeeSelect.innerHTML =
+                '<option value="">Select Employee</option>';
+            return;
+        }
+
+        fetch(`/employees-by-department/${departmentId}`)
+            .then(response => response.json())
+            .then(data => {
+
+                employeeSelect.innerHTML =
+                    '<option value="">Select Employee</option>';
+
+                data.forEach(employee => {
+                    employeeSelect.innerHTML +=
+                        `<option value="${employee.id}">
+                            ${employee.emp_code} : ${employee.first_name}  ${employee.last_name}
+                         </option>`;
+                });
+            });
+    });
+}
+
+bindDepartmentEmployee(
+    'attendance_department',
+    'attendance_employee'
+);
+
+bindDepartmentEmployee(
+    'leave_department',
+    'leave_employee'
+);
+</script>
 
 </body>
 </html>

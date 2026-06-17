@@ -21,6 +21,12 @@ class AttendanceReportController extends Controller
         $data['employees'] = $this->getEmployeeList($request);;
         return view('welcome', $data);
     }
+    
+    public function fetcheEmployee(Request $request,$department)
+    {
+        $employees = $this->getEmployeeList($request,$department);
+        return response()->json($employees);
+    }
 
     public function generateAbb($stri)
 {
@@ -321,7 +327,7 @@ class AttendanceReportController extends Controller
     }
 
 
-    public function getEmployeeList($request){
+    public function getEmployeeList($request,$department=null){
         return DB::table('personnel_employee as pe')
             ->selectRaw('pe.*,d.dept_name')
             ->join('personnel_position as pp', 'pp.id', '=', 'pe.position_id')
@@ -342,6 +348,8 @@ class AttendanceReportController extends Controller
             })
             ->when($request->department, function ($query) use ($request) {
                 $query->where('pe.department_id', $request->department);
+            })->when($department, function ($query) use ($department) {
+                $query->where('pe.department_id', $department);
             })
             ->orderBy('pe.first_name','asc')->get();
     }

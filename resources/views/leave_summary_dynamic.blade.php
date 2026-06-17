@@ -14,19 +14,21 @@
 <tr>
     <th colspan="2"> Date</th>
     <th rowspan="2"> Duration</th>
-    <th colspan="{{count($leave_codes)}}">Leave Segmant</th>
+    <th colspan="{{count($leave_codes)*2}}">Leave Segmant</th>
 </tr>
 <tr>
     <th >From</th>
     <th>To</th>
     @foreach($leave_codes ?? [] as $leave)
         <th>{{ $leave }}</th>
+        <th>BL</th>
     @endforeach
 </tr>
 
 </thead>
 
 <tbody>
+
 
     @forelse($leaves_record_by_employee[$employee->id] ?? [] as $lrecord)
 
@@ -42,6 +44,7 @@
     <td align="center">{{$lrecord['leave_info']->leave_day ?? ''}}</td>
     @foreach($leave_codes ?? [] as $leave)
         <td align="center">{{ $lrecord['leave_code']== $leave ?($lrecord['leave_info']->leave_day ?? ''):'' }}</td>
+        <td align="center">{{ $lrecord['leave_code']== $leave ?($lrecord['leave_balance'] ?? ''):'' }}</td>
     @endforeach
 </tr>
 @empty

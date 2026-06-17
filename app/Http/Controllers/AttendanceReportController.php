@@ -179,6 +179,65 @@ class AttendanceReportController extends Controller
             }
         }else{
 
+
+            $previous_leave_by_employee = [];
+            $employees_leave_balance = [];
+
+            foreach($data['employees'] as $key=>$value){
+
+                foreach(config('leave') as $lkey=>$lvalue){
+                    $employees_leave_balance[$value->id.'___'.$lkey]=$lvalue;
+                }
+
+            }
+
+
+            $leaves_previous_records = DB::table('att_leave as al')
+                ->select(
+                    'wwi.employee_id',
+                    'al.pay_code_id',
+                    'pc.code',
+                    'pc.symbol',
+                    DB::raw('SUM(al.leave_day) as total_leave_day')
+                )
+                ->join(
+                    'workflow_workflowinstance as wwi',
+                    'al.workflowinstance_ptr_id',
+                    '=',
+                    'wwi.id'
+                )
+                ->join('att_paycode as pc', 'pc.id', '=', 'al.pay_code_id')
+                ->where('al.start_time', '<', $endDate)
+                ->where('al.end_time', '>=', $data['year'].'-01-01');
+
+            if ($request->employee) {
+                $leaves_previous_records->where('wwi.employee_id', $request->employee);
+            }
+
+            $leaves_previous_records = $leaves_previous_records
+                ->groupBy(
+                    'wwi.employee_id',
+                    'al.pay_code_id',
+                    'pc.code',
+                    'pc.symbol'
+                )
+                ->get();
+
+            foreach($leaves_previous_records as $key=>$value){
+                $leave_code = trim($value->symbol ?? '') !== ''
+                    ? $this->generateAbb($value->symbol)
+                    : (
+                        trim($value->code ?? '') !== ''
+                            ? $this->generateAbb($value->code)
+                            : ''
+                    );
+                    $employees_leave_balance[$value->employee_id.'___'.$leave_code]=$$employees_leave_balance[$value->employee_id.'___'.$leave_code]-$value->total_leave_day;
+
+            }
+
+             
+
+
             $leaves_records = DB::table('att_leave as al')
             ->select(
                 'al.apply_reason',
@@ -204,31 +263,35 @@ class AttendanceReportController extends Controller
             ->where('al.start_time', '<=', $endDate)
             ->where('al.end_time', '>=', $startDate);
 
-        if ($request->employee) {
-            $leaves_records->where('wwi.employee_id', $request->employee);
-        }
+            if ($request->employee) {
+                $leaves_records->where('wwi.employee_id', $request->employee);
+            }
 
-        $leaves_records = $leaves_records->get();
+            $leaves_records = $leaves_records->get();
 
-        $leaves_record_by_employee = [];
+            $leaves_record_by_employee = [];
 
-        foreach ($leaves_records as $value) {
+            foreach ($leaves_records as $value) {
 
-            $leave_code = trim($value->symbol ?? '') !== ''
-                ? $this->generateAbb($value->symbol)
-                : (
-                    trim($value->code ?? '') !== ''
-                        ? $this->generateAbb($value->code)
-                        : ''
-                );
+                $leave_code = trim($value->symbol ?? '') !== ''
+                    ? $this->generateAbb($value->symbol)
+                    : (
+                        trim($value->code ?? '') !== ''
+                            ? $this->generateAbb($value->code)
+                            : ''
+                    );
 
-            $leaves_record_by_employee[$value->employee_id][] = [
-                'leave_info' => $value,
-                'leave_code' => $leave_code
-            ];
-        }
+                $employees_leave_balance[$value->employee_id.'___'.$leave_code]=$$employees_leave_balance[$value->employee_id.'___'.$leave_code]-$value->total_leave_day;
+                $leaves_record_by_employee[$value->employee_id][] = [
+                    'leave_info' => $value,
+                    'leave_code' => $leave_code,
+                    'leave_balance' => $employees_leave_balance[$value->employee_id.'___'.$leave_code]
+                ];
 
-        $data['leaves_record_by_employee'] = $leaves_record_by_employee;
+            }
+
+            $data['leaves_record_by_employee'] = $leaves_record_by_employee;
+            $data['employees_leave_balance'] = $employees_leave_balance;
 
             $config = ['format'=>'A4','orientation'=>'P','show_watermark'=>false];
             if($request->format == 'pdf'){

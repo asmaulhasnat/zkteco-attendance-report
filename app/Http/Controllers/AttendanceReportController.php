@@ -180,7 +180,6 @@ class AttendanceReportController extends Controller
         }else{
 
             $yearStart = $data['year'] . '-01-01';
-            $rangeEnd  = $startDate;
             $employees_leave_balance = [];
 
             foreach($data['employees'] as $key=>$value){
@@ -198,15 +197,15 @@ class AttendanceReportController extends Controller
                 'al.pay_code_id',
                 'pc.code',
                 'pc.symbol',
-                DB::raw("
-                    SUM(
-                        (
-                            LEAST(DATE(al.end_time), DATE('{$startDate}') - INTERVAL '1 day')
-                            - GREATEST(DATE(al.start_time), DATE('{$yearStart}'))
-                        ) + 1
-                    ) as total_leave_day
-                ")
                 
+                DB::raw("
+                SUM(
+                    (
+                        LEAST(al.end_time::date, '{$startDate}'::date - 1)
+                        - GREATEST(al.start_time::date, '{$yearStart}'::date)
+                    ) + 1
+                ) as total_leave_day
+            ")
             )
             ->join('workflow_workflowinstance as wwi', 'al.workflowinstance_ptr_id', '=', 'wwi.id')
             ->join('att_paycode as pc', 'pc.id', '=', 'al.pay_code_id')
@@ -249,21 +248,19 @@ class AttendanceReportController extends Controller
                 'al.start_time',
                 'al.end_time',
                 'al.apply_time',
-                DB::raw("
-                    SUM(
-                        (
-                            LEAST(DATE(al.end_time), DATE('{$endDate}') - INTERVAL '1 day')
-                            - GREATEST(DATE(al.start_time), DATE('{$startDate}'))
-                        ) + 1
-                    ) as total_leave_day
-                "),
                 'al.pay_code_id',
                 'wwi.approval_time',
                 'wwi.approval_remark',
                 'wwi.approval_status',
                 'wwi.employee_id',
                 'pc.code',
-                'pc.symbol'
+                'pc.symbol',
+                DB::raw("
+                    (
+                        LEAST(al.end_time::date, '{$endDate}'::date)
+                        - GREATEST(al.start_time::date, '{$startDate}'::date)
+                    ) + 1 as leave_day
+                ")
             )
             ->join(
                 'workflow_workflowinstance as wwi',

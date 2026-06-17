@@ -174,7 +174,7 @@ class AttendanceReportController extends Controller
             $data['depertment_wise_employee'] =$depertment_wise_employee;
             $data['summary_total'] = $summary_total;
             $data['working_days'] = $working_days;
-            $data['leave_codes'] = array_keys($request->config ?? config('leave'));
+            $data['leave_codes'] = array_keys(config('leave'));
             $data['total_colspan'] =$data['totalDays']+7+count( $data['leave_codes'] );
 
 

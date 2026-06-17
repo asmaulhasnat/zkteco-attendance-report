@@ -330,7 +330,7 @@ class AttendanceReportController extends Controller
             ->when($request->department, function ($query) use ($request) {
                 $query->where('pe.department_id', $request->department);
             })
-            ->get();;
+            ->orderBy('pe.first_name','asc')->get();
     }
 
     public function getDepartmentList($request){
@@ -338,7 +338,7 @@ class AttendanceReportController extends Controller
             ->when($request->department, function ($query) use ($request) {
                 $query->where('id', $request->department);
             })
-            ->get();
+            ->orderBy('dept_name','asc')->get();
     }
     public function getHolidayList($startDate,$endDate){
 
@@ -382,7 +382,7 @@ class AttendanceReportController extends Controller
 
         $leave_codes  =[];
 
-        $leave_code_infos = DB::table('att_paycode')->where('is_work',0)->get();
+        $leave_code_infos = DB::table('att_paycode')->where('is_work',0)->orderBy('symbol','asc')->get();
 
         foreach($leave_code_infos as $key=>$value){
             $abbr = trim($value->symbol ?? '') !== ''? $this->generateAbb($value->symbol): (trim($value->code ?? '') !== ''? $this->generateAbb($value->code): '');

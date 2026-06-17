@@ -200,12 +200,13 @@ class AttendanceReportController extends Controller
                 'pc.symbol',
                 DB::raw("
                     SUM(
-                        DATEDIFF(
-                            LEAST(al.end_time, '{$rangeEnd}'),
-                            GREATEST(al.start_time, '{$yearStart}')
+                        (
+                            LEAST(DATE(al.end_time), DATE('{$startDate}') - INTERVAL '1 day')
+                            - GREATEST(DATE(al.start_time), DATE('{$yearStart}'))
                         ) + 1
                     ) as total_leave_day
                 ")
+                
             )
             ->join('workflow_workflowinstance as wwi', 'al.workflowinstance_ptr_id', '=', 'wwi.id')
             ->join('att_paycode as pc', 'pc.id', '=', 'al.pay_code_id')
@@ -249,11 +250,13 @@ class AttendanceReportController extends Controller
                 'al.end_time',
                 'al.apply_time',
                 DB::raw("
-            DATEDIFF(
-                LEAST(DATE(al.end_time), '{$endDate}'),
-                GREATEST(DATE(al.start_time), '{$startDate}')
-            ) + 1 as leave_day
-        "),
+                    SUM(
+                        (
+                            LEAST(DATE(al.end_time), DATE('{$endDate}') - INTERVAL '1 day')
+                            - GREATEST(DATE(al.start_time), DATE('{$startDate}'))
+                        ) + 1
+                    ) as total_leave_day
+                "),
                 'al.pay_code_id',
                 'wwi.approval_time',
                 'wwi.approval_remark',

@@ -46,7 +46,7 @@
     <td align="center">{{$lrecord['leave_info']->leave_day ?? ''}} ({{$lrecord['leave_code'] ?? ''}})</td>
         @foreach($leave_codes ?? [] as $leave)
             <td align="center">{{ $lrecord['leave_code']== $leave ?($lrecord['leave_info']->leave_day ?? ''):'' }}</td>
-            <td align="center">{{ $lrecord['leave_code']== $leave ?($lrecord['leave_balance'] ?? ''):$employees_leave_balance[$employee->id.'___'.$leave]  }}</td>
+            <td align="center">{{ $lrecord['leave_code']== $leave ?($lrecord['leave_balance'] ?? ''):$employees_leave_balance[$employee->id.'___'.$leave] ?? ''  }}</td>
         @endforeach
     </tr>
 @empty

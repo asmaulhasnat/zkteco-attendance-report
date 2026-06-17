@@ -49,6 +49,7 @@ class AttendanceReportController extends Controller
     public function monthlyAttendanceReport(Request $request)
     {   
 
+
         $request->validate([
             'format' => 'required',
             'month' => 'required_if:report_type,attendance',
@@ -190,7 +191,7 @@ class AttendanceReportController extends Controller
 
             foreach($data['employees'] as $key=>$value){
 
-                foreach(config('leave') as $lkey=>$lvalue){
+                foreach(($request->config  ?? config('leave')) as $lkey=>$lvalue){
                     $employees_leave_balance[$value->id.'___'.$lkey]=$lvalue;
                 }
 
@@ -308,7 +309,8 @@ class AttendanceReportController extends Controller
 
             $data['leaves_record_by_employee'] = $leaves_record_by_employee;
             $data['employees_leave_balance'] = $employees_leave_balance;
-            $data['config_leave'] = config('leave');
+            $data['config_leave'] = $request->config ?? config('leave');
+            $data['leave_codes'] = array_keys($request->config ?? config('leave'));
             
 
             $config = ['format'=>'A4','orientation'=>'P','show_watermark'=>false];

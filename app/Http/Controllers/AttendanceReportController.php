@@ -332,6 +332,7 @@ class AttendanceReportController extends Controller
                 'pe.last_name',
                 'pe.nickname',
                 'pe.email',
+                'pe.hire_date',
                 'pp.position_name'
             )
             ->when($request->employee, function ($query) use ($request) {
